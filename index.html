@@ -1,0 +1,46 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Image Sharing!</title>
+  <meta name="description" content="Upload an image to the web">
+  <meta name="author" content="Drew Blumenthal">
+
+  <link rel="stylesheet" href="">
+
+</head>
+
+<body>
+    <h1>Hey</h1>
+    <input type="file" id="fileinput">
+</body>
+
+<script
+  src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+<script>
+    var fileButton = document.getElementById("fileinput");
+    fileButton.addEventListener("change", function(){
+        console.log("trying");
+            var blobFile = $('#fileinput')[0].files[0];
+            var formData = new FormData();
+            formData.append("fileToUpload", blobFile);
+
+            $.ajax({
+                url: "upload.php",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log("sent");
+                },
+                error: function(jqXHR, textStatus, errorMessage) {
+                    console.log("failed");
+                    console.log(errorMessage); // Optional
+                }
+            });
+    });
+    
+</script>
+
+</html>
