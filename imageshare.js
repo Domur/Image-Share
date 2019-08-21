@@ -1,14 +1,17 @@
 var express = require('express');
-var fs = require('fs');
 var mongoose = require('mongoose');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+require('dotenv').config({path: __dirname + '/.env'});
 var Schema = mongoose.Schema;
 
 var app = express();
 
-//var imgPath = './pics/pic1.jpg';
+mongoose.connect("mongodb+srv://" + process.env.MONGO_USERNAME + ":" + process.env.MONGO_PASSWORD + "@cluster0-hjxlu.gcp.mongodb.net/test?retryWrites=true&w=majority", {useNewUrlParser: true});
 
-mongoose.connect('mongodb://localhost:27017/myapp', {useNewUrlParser: true});
+function errored(){
+    console.log("couldnt connect, exitting");
+    process.exit(1);
+}
 
 var schema = new Schema({
     name: String,
@@ -20,24 +23,7 @@ var A = mongoose.model('A', schema);
 mongoose.connection.on('open', function () {
   console.error('mongo is open');
 
-    /* var a = new A;
-    a.name = "froge";
-    a.img.data = fs.readFileSync(imgPath);
-    a.img.contentType = 'image/png';
-    A.findOne({name: a.name}, function (err, doc) {
-        if (doc == null) {
-            console.error('new, saved img to mongo');
-            a.save(function (err, a) {
-                if (err) throw err;
-            });
-        }
-        else{ 
-            console.log("repeat, not saving");
-            return;
-        }
-    }); */
-
-      app.listen(3000)
+      app.listen(8080)
       app.use(bodyParser.raw( { type: "*/*", limit: '18mb' }));
       app.get('/$', function (req, res, next) {
         res.sendFile("index.html", {root: __dirname });
@@ -46,11 +32,9 @@ mongoose.connection.on('open', function () {
       app.get('/i/:imgname', function (req, res, next) {
         A.findOne({name: req.params.imgname}, function (err, doc) {
             if (doc == null) {
-                console.log("name not found in db");
                 return;
             }
             else {
-                console.log("file found in db");
                 res.contentType(doc.img.contentType);
                 res.send(doc.img.data);
             }
@@ -70,11 +54,21 @@ mongoose.connection.on('open', function () {
             console.log("jpeg and png not detected");
             return;
         }
-        newImg.name = "image";
-        newImg.img.data = newBuffer;
-        newImg.img.contentType = 'image/png';
-        newImg.save(function (err, newImg) {
-            if (err) throw err;
+        var imageName = makeid(5);
+        console.log("Image name: " + imageName);
+        A.findOne({name: imageName}, function (err, doc) {
+            if (doc == null) {
+                newImg.name = imageName;
+                newImg.img.data = newBuffer;
+                newImg.img.contentType = 'image/png';
+                newImg.save(function (err, newImg) {
+                    if (err) throw err;
+                });
+            }
+            else {
+                console.log('image name already in use');
+                return;
+            }
         });
         //res.send(a.img.data);
       });
@@ -91,3 +85,13 @@ mongoose.connection.on('open', function () {
         process.exit(1);
       });
     });
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
