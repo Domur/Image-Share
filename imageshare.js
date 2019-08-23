@@ -25,11 +25,12 @@ mongoose.connection.on('open', function () {
 
       app.listen(8080)
       app.use(bodyParser.raw( { type: "*/*", limit: '18mb' }));
-      app.get('/$', function (req, res, next) {
+      app.get('/i/', function (req, res, next) {
         res.sendFile("index.html", {root: __dirname });
       });
 
       app.get('/i/:imgname', function (req, res, next) {
+        console.log(req.params.imgname);
         A.findOne({name: req.params.imgname}, function (err, doc) {
             if (doc == null) {
                 return;
@@ -40,37 +41,40 @@ mongoose.connection.on('open', function () {
             }
         });
       });
-
       app.post("/upload.php", function (req, res) {
         var newImg = new A;
         var newBuffer = new Buffer(req.body);
+        var imageUrl = newBuffer.subarray(newBuffer.indexOf("imageurl") + 9, newBuffer.lastIndexOf("Web") - 7).toString().trim();
         if(newBuffer.indexOf("JFIF") > -1){
             newBuffer = newBuffer.slice(newBuffer.indexOf("JFIF") - 6, newBuffer.lastIndexOf("Web") - 6);
         }
         else if(newBuffer.indexOf("PNG") > -1){
             newBuffer = newBuffer.slice(newBuffer.indexOf("PNG") - 1, newBuffer.lastIndexOf("IEND") + 8);
         }
+        else if(newBuffer.indexOf("Exif") > -1){
+            newBuffer = newBuffer.slice(newBuffer.indexOf("Exif") - 6, newBuffer.lastIndexOf("Web") - 6);
+        }
         else{
             console.log("jpeg and png not detected");
+            res.send(req.body);
             return;
         }
-        var imageName = makeid(5);
-        console.log("Image name: " + imageName);
-        A.findOne({name: imageName}, function (err, doc) {
+        console.log("Image name: " + imageUrl);
+        A.findOne({name: imageUrl}, function (err, doc) {
             if (doc == null) {
-                newImg.name = imageName;
+                newImg.name = imageUrl;
                 newImg.img.data = newBuffer;
                 newImg.img.contentType = 'image/png';
                 newImg.save(function (err, newImg) {
                     if (err) throw err;
                 });
+                res.send("Successful");
             }
             else {
+                res.status(500).send({error: "Image name " + imageUrl + " was already in use, try another"});
                 console.log('image name already in use');
-                return;
             }
         });
-        //res.send(a.img.data);
       });
 
       app.on('close', function () {

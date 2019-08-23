@@ -11,35 +11,54 @@
 </head>
 
 <body>
-    <h1>Hey</h1>
-    <input type="file" id="fileinput">
+    <h1>Choose a png or jpg to upload, then enter the name of the url you'd like</h1>
+    Attach file <input type="file" id="fileinput"><br><br>
+    https://domer.dev/i/<input type="text" id="imageurl"><br><br>
+    <input type="submit" id="submitbutton" value="Submit">
 </body>
 
 <script
   src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
 <script>
-    var fileButton = document.getElementById("fileinput");
-    fileButton.addEventListener("change", function(){
+    var submitButton = document.getElementById("submitbutton");
+    submitButton.addEventListener("click", function(){
         console.log("trying");
             var blobFile = $('#fileinput')[0].files[0];
             var formData = new FormData();
+            var imageUrl = $('#imageurl')[0].value;
+            if(imageUrl == ""){
+                imageUrl = makeid(5);
+            }
+            console.log(imageUrl);
             formData.append("fileToUpload", blobFile);
+            formData.append("imageurl", imageUrl);
 
             $.ajax({
-                url: "upload.php",
+                url: "/upload.php",
                 type: "POST",
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    console.log("sent");
+                    console.log("Successful, redirecting...");
+                    window.location.href = "/i/" + imageUrl;
                 },
                 error: function(jqXHR, textStatus, errorMessage) {
-                    console.log("failed");
+                    console.log("Failed probably due to the requested image url being used already, try another");
                     console.log(errorMessage); // Optional
                 }
             });
     });
+
+    function makeid(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
     
 </script>
 
