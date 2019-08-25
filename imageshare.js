@@ -6,12 +6,7 @@ var Schema = mongoose.Schema;
 
 var app = express();
 
-mongoose.connect("mongodb+srv://" + process.env.MONGO_USERNAME + ":" + process.env.MONGO_PASSWORD + "@cluster0-hjxlu.gcp.mongodb.net/test?retryWrites=true&w=majority", {useNewUrlParser: true});
-
-function errored(){
-    console.log("couldnt connect, exitting");
-    process.exit(1);
-}
+mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true});
 
 var schema = new Schema({
     name: String,
@@ -89,13 +84,3 @@ mongoose.connection.on('open', function () {
         process.exit(1);
       });
     });
-
-function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
