@@ -6,19 +6,22 @@
   <meta name="description" content="Upload an image to the web">
   <meta name="author" content="Drew Blumenthal">
 
-  <link rel="stylesheet" href="">
+  <link rel="stylesheet" href="./index.css" >
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 </head>
 
 <body>
-    <h1>Choose a png or jpg to upload, then enter the name of the url you'd like</h1>
-    Attach file <input type="file" id="fileinput"><br><br>
-    https://domer.dev/i/<input type="text" id="imageurl"><br><br>
-    <input type="submit" id="submitbutton" value="Submit">
+    <h1>Choose a png or jpg to upload, then enter the name of the path you'd like</h1>
+    <div class="form">
+        Attach file <input type="file" id="fileinput"><br><br>
+        https://domer.dev/i/<input type="text" id="imageurl"><br><br>
+        <input type="submit" id="submitbutton" value="Submit">
+    </div>
 </body>
 
-<script
-  src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+
 <script>
     var submitButton = document.getElementById("submitbutton");
     submitButton.addEventListener("click", function(){

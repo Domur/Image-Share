@@ -1,0 +1,18 @@
+* {
+    background-image: url(http://api.thumbr.it/whitenoise-361x370.png?background=9ee2ebff&noise=380038&density=2&opacity=23);
+}
+
+h1 {
+    margin-top: 10%;
+    text-align: center;
+}
+
+.form {
+    margin: 0;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    margin-right: -50%;
+    text-align: left;
+    transform: translate(-50%, -50%)
+}
